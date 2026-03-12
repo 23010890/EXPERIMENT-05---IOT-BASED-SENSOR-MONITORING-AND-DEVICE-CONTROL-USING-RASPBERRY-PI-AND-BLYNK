@@ -2,10 +2,10 @@
 
 ---
 
-### **NAME:**  
-### **DEPARTMENT:**  
-### **ROLL NO:**  
-### **DATE OF EXPERIMENT:**  
+### **NAME: DHARSHINI S**  
+### **DEPARTMENT: CSE(IOT)**  
+### **ROLL NO: 212223110010**  
+### **DATE OF EXPERIMENT: 12-03-2026**  
 
 ---
 
@@ -135,117 +135,129 @@ import RPi.GPIO as GPIO
 import BlynkLib
 import time
 
-# Blynk Authentication Token
-BLYNK_AUTH = 'Your_Blynk_Auth_Token'
+# ---------------- BLYNK CONFIG ----------------
+BLYNK_AUTH = "7kLFWQ89KhNmCFckcnsT3KUgDdUPC_SC"
 
-# Initialize Blynk
-blynk = BlynkLib.Blynk(BLYNK_AUTH)
+blynk = BlynkLib.Blynk(
+    BLYNK_AUTH,
+    server="blynk.cloud",
+    port=80
+)
 
-# GPIO Setup
+# ---------------- GPIO SETUP ----------------
+GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
-# Sensor Pins
-IR_PIN = 17
-LDR_PIN = 27
-
-# Output Pins
-RELAY = 22
-LED = 23
-BUZZER = 24
+# Inputs
+IR_PIN = 18
+LDR_PIN = 23
 
 GPIO.setup(IR_PIN, GPIO.IN)
 GPIO.setup(LDR_PIN, GPIO.IN)
 
-GPIO.setup(RELAY, GPIO.OUT)
-GPIO.setup(LED, GPIO.OUT)
-GPIO.setup(BUZZER, GPIO.OUT)
+# Outputs
+RELAY_PIN = 24
+LED_PIN = 8
+BUZZER_PIN = 25
 
-GPIO.output(RELAY, 0)
-GPIO.output(LED, 0)
-GPIO.output(BUZZER, 0)
+GPIO.setup(RELAY_PIN, GPIO.OUT)
+GPIO.setup(LED_PIN, GPIO.OUT)
+GPIO.setup(BUZZER_PIN, GPIO.OUT)
 
-# Blynk Control for Relay
-@blynk.on("V2")
+# Initial OFF states
+GPIO.output(RELAY_PIN, 1)   # Relay OFF (Active LOW)
+GPIO.output(LED_PIN, 0)
+GPIO.output(BUZZER_PIN, 0)
+
+# ---------------- CONTROL FUNCTIONS ----------------
+
+# Relay (Active LOW)
 def relay_control(value):
     if int(value[0]) == 1:
-        GPIO.output(RELAY, 1)
+        GPIO.output(RELAY_PIN, 0)   # ON
     else:
-        GPIO.output(RELAY, 0)
+        GPIO.output(RELAY_PIN, 1)   # OFF
+    print("Relay:", value[0])
 
-# Blynk Control for LED
-@blynk.on("V3")
+# LED (Active HIGH)
 def led_control(value):
-    if int(value[0]) == 1:
-        GPIO.output(LED, 1)
-    else:
-        GPIO.output(LED, 0)
+    GPIO.output(LED_PIN, int(value[0]))
+    print("LED:", value[0])
 
-# Blynk Control for Buzzer
-@blynk.on("V4")
+# Buzzer (Active HIGH)
 def buzzer_control(value):
-    if int(value[0]) == 1:
-        GPIO.output(BUZZER, 1)
-    else:
-        GPIO.output(BUZZER, 0)
+    GPIO.output(BUZZER_PIN, int(value[0]))
+    print("Buzzer:", value[0])
 
+# Register handlers
+blynk.on("V2", relay_control)
+blynk.on("V3", led_control)
+blynk.on("V4", buzzer_control)
+
+# ---------------- MAIN LOOP ----------------
 while True:
     blynk.run()
 
     ir_value = GPIO.input(IR_PIN)
     ldr_value = GPIO.input(LDR_PIN)
 
-    # Send sensor values to Blynk
+    print("IR:", ir_value, " LDR:", ldr_value)
+
+    # Send to Blynk
     blynk.virtual_write(0, ir_value)
     blynk.virtual_write(1, ldr_value)
 
     time.sleep(1)
-
-...
 ```
 ---
 ## **Expected Output (Blynk App Interface)**
-### **Learners should capture screenshots of the Blynk mobile application showing the following widgets:**
-### **Screen 1 – Sensor Monitoring**
-•	Label Widget (V0) → Displays IR Sensor Value (Object Detected / Not Detected)
-•	Label Widget (V1) → Displays LDR Sensor Value (Light / Dark)
-### **Screen 2 – Device Control**
-•	Button Widget (V2) → Relay ON/OFF
-•	Button Widget (V3) → LED ON/OFF
-•	Button Widget (V4) → Buzzer ON/OFF
-### **Screen 3 – Hardware Output**
-#### **When the buttons are pressed in the Blynk app:**
-•	LED turns ON/OFF
-•	Buzzer produces sound
-•	Relay switches the connected load
-### **Learners should attach:**
-1.	Screenshot of the Blynk dashboard showing sensor values.
-2.	Screenshot of device control buttons.
-3.	Photo of hardware setup with Raspberry Pi and sensors.
 
 
 ### FIGURE -08 Relay On Image
+![RELAY ON](https://github.com/user-attachments/assets/b4c3b4c0-28dd-45cd-ac70-3cbe5b5626b1)
 
 ### FIGURE -09 LED On Image
+![LED ON 1](https://github.com/user-attachments/assets/0fc2e8d5-efdd-4f46-8d23-70aefdaa345e)
 
 ### FIGURE -10 Buzzer On Image
+![BUZZER](https://github.com/user-attachments/assets/299849a6-8ff9-418a-a5d9-c9c0b55b3238)
 
-### FIGURE -11 Blynk App Screenshot for IR Sensor
+### Screenshot for IR Sensor
+![WhatsApp Image 2026-03-12 at 1 16 47 PM](https://github.com/user-attachments/assets/0fdcf5e9-5a93-4d6c-80ff-f88b7947254d)
 
-### FIGURE -12 Blynk App Screenshot for LDR Sensor
+### Screenshot for LDR Sensor
+![WhatsApp Image 2026-03-12 at 1 16 57 PM](https://github.com/user-attachments/assets/6288ff84-6207-4de5-a9e3-e33ab015466a)
 
-### FIGURE -13 Blynk App Screenshot for Relay ON
+### Screenshot for Relay ON
+![WhatsApp Image 2026-03-12 at 1 16 40 PM](https://github.com/user-attachments/assets/e3e3903b-7f90-4331-80ac-b16241ab8869)
 
-### FIGURE -11 Blynk App Screenshot for Relay OFF
+![RELAY 1](https://github.com/user-attachments/assets/e284aa96-02c1-4326-bf14-735a2573fbc3)
 
-### FIGURE -12 Blynk App Screenshot for Buzzer ON
+### Screenshot for Relay OFF
+![WhatsApp Image 2026-03-12 at 1 16 47 PM](https://github.com/user-attachments/assets/d088a795-3fed-40b9-8554-ba3376e0acb9)
 
-### FIGURE -13 Blynk App Screenshot for Buzzer OFF
+![RELAY 0](https://github.com/user-attachments/assets/4852acc7-2150-42a8-9169-886f13186247)
 
-### FIGURE -14 Blynk App Screenshot for LED ON
+### Screenshot for Buzzer ON
+![WhatsApp Image 2026-03-12 at 1 17 01 PM](https://github.com/user-attachments/assets/93e80550-8b85-465e-a0a4-0c58c46accc4)
 
-### FIGURE -15 Blynk App Screenshot for LED OFF
+![BUZZER 1](https://github.com/user-attachments/assets/e92f0ce6-e5fb-40c7-9400-37ce63bd999a)
 
+### Screenshot for Buzzer OFF
+![WhatsApp Image 2026-03-12 at 1 17 03 PM](https://github.com/user-attachments/assets/30a75041-a257-47a7-807d-7d35e3bd6224)
 
+![BUZZER 0](https://github.com/user-attachments/assets/24c92d9c-7940-4cb8-b68d-ab1cfb8c49d9)
+
+### Screenshot for LED ON
+![WhatsApp Image 2026-03-12 at 1 16 42 PM](https://github.com/user-attachments/assets/8e4f2a3e-2ea5-483e-8279-7121fd48d9d4)
+
+![LED 1](https://github.com/user-attachments/assets/4f0fae10-9c63-4ef2-a621-9914c4e57283)
+
+### Screenshot for LED OFF
+
+![WhatsApp Image 2026-03-12 at 1 16 57 PM](https://github.com/user-attachments/assets/8fd2c2a6-3cfb-4194-b48b-9806f7d695b8)
+
+![LED 0](https://github.com/user-attachments/assets/9c6c311f-542c-4859-8ac6-9f8390e2f745)
 
 
 ## **RESULT:**  
